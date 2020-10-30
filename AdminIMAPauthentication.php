@@ -62,7 +62,7 @@ class adminIMAPauthentication extends phplistPlugin {
             }
 
             $imap_connection_string = '{' . $imap_host . ':{' . $imap_port . '}' . $imap_security . '}';
-            logEvent('IMAP connection string = ' . $imap_host_string );
+            logEvent('IMAP connection string = ' . $imap_connection_string );
             logEvent('IMAP login = ' . $login );
             $connection = imap_open($imap_connection_string, $login, $password, OP_HALFOPEN);
             if ($connection) {
