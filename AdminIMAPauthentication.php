@@ -7,13 +7,14 @@ class adminIMAPauthentication extends phplistPlugin {
   public $description = 'Provides authentication to phpList administrators using IMAP ';
   public $authProvider = true;
 
-  global $adminAuthenticationProvider;
+//  global $adminAuthenticationProvider;
   
 /**
  * Define settings needed by this plugin
  *
 **/  
-  public $settings = array(
+/*
+public $settings = array(
     "adminIMAPauthentication__imap_server_name" => array (
       'value' => "", // no default value
       'description' => 'IMAP admin authentication server nane\nYour IMAP server name (FQDN) or IP\nexamples : mail.google.com, 8.8.8.8, 2001:4860:4860::8888 ...',
@@ -42,7 +43,7 @@ class adminIMAPauthentication extends phplistPlugin {
       'category'=> 'security',
     ),
   );
-  
+*/  
   
  /**
    * Fallback to local login if IMAP fails
