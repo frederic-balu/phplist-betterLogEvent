@@ -256,17 +256,13 @@ function listAdmins()
   {
 logEvent('calling : adminIMAPauth : listAdmins');
 
-
-require_once dirname(__FILE__).'/accesscheck.php';
-
 if (isset($_GET['remember_find'])) {
     $remember_find = (string) $_GET['remember_find'];
 } else {
     $remember_find = '';
 }
 
-logEvent('calling admins.php' );
-logEvent('admins.php : $GLOBALS[admin_auth] = ' . print_r($GLOBALS['admin_auth'], true ) );
+logEvent('adminIMAPauth : listAdmins : $GLOBALS[admin_auth] = ' . print_r($GLOBALS['admin_auth'], true ) );
 
 $start = isset($_GET['start']) ? sprintf('%d', $_GET['start']) : 0;
 $listid = isset($_GET['id']) ? sprintf('%d', $_GET['id']) : 0;
@@ -309,6 +305,10 @@ if (isset($add)) {
     echo '<br/>'.s('Admin added').'<br/>';
 }
 
+$tables['admin'] = $GLOBALS['tables']['admin'];
+
+logEvent('adminIMAPauth : listAdmins : $tables[\'admin\'] = ' . $tables['admin'] );
+
 if (!$find) {
     $result = Sql_query('SELECT count(*) FROM '.$tables['admin']);
 } else {
@@ -316,6 +316,7 @@ if (!$find) {
 }
 $totalres = Sql_fetch_Row($result);
 $total = $totalres[0];
+
 
 echo '<p class="info">'.$total.' '.s('Administrators');
 echo $find ? ' '.s('found').'</p>' : '</p>';
