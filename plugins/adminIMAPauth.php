@@ -56,10 +56,10 @@ public function activate()
 //        logEvent('calling : adminIMAPauth : activate' );      
         parent::activate();
     $newSize = 120;
-    // donne $newSize caractères au lieu de 25 pour le loginname
+    // donne $newSize caractères au lieu de 25 pour le loginname pour supporter la longueur des emails
     $query = sprintf('alter table %s MODIFY loginname varchar(%d)', $GLOBALS['tables']['admin'], $newSize );
     $req = Sql_Query($query);
-    // donne $newSize caractères au lieu de 25 pour le modifiedby
+    // donne $newSize caractères au lieu de 25 pour le modifiedby pour supporter la longueur des emails
     $query = sprintf('alter table %s MODIFY modifiedby varchar(%d)', $GLOBALS['tables']['admin'], $newSize );
     $req = Sql_Query($query);
     }    
