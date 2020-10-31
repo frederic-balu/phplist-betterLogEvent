@@ -4,7 +4,7 @@ require_once __DIR__.'/../accesscheck.php';
 
 class adminIMAPauth extends phplistPlugin {
   public $name = 'IMAP server as authenticator';
-  public $version = 0.2;
+  public $version = 0.9;
   public $authors = 'Frederic BALU';
   public $description = 'Provides authentication to phpList administrators using IMAP ';
   public $authProvider = true;
@@ -271,17 +271,28 @@ public function activate()
    * @return array of admins
    *    id => name
    */
-function listAdmins() 
-  {
-logEvent('calling : adminIMAPauth : listAdmins');
-
+function listAdmins() {
+  logEvent('calling (adminIMAPauth::listAdmins ) from ' . print_r($_SERVER['REQUEST_URI'], true ) );
+  // cete fonction est appelée dans plusieurs contextes. Afin d'obtenir le bon rendu, on récupère la page qui a fait l'appel.
+  $page = explode ( '=', $_SERVER['REQUEST_URI'] );
+  $page = explode ( '&', $page[1] );
+  $page = $page[0];
+  logEvent('calling (adminIMAPauth::listAdmins ) from page ' . $page );
+  if ( $page == 'editlist' ) {
+    $result = array();
+    $req = Sql_Query("select id,loginname from {$GLOBALS['tables']['admin']} order by loginname");
+    while ($row = Sql_Fetch_Array($req)) {
+      $result[$row['id']] = $row['loginname'];
+    }
+    return $result;
+  }
+  else {
+/* Admins edit table - BEGIN */
 if (isset($_GET['remember_find'])) {
     $remember_find = (string) $_GET['remember_find'];
 } else {
     $remember_find = '';
 }
-
-logEvent('adminIMAPauth : listAdmins : $GLOBALS[admin_auth] = ' . print_r($GLOBALS['admin_auth'], true ) );
 
 $start = isset($_GET['start']) ? sprintf('%d', $_GET['start']) : 0;
 $listid = isset($_GET['id']) ? sprintf('%d', $_GET['id']) : 0;
@@ -384,7 +395,7 @@ while ($admin = Sql_fetch_array($result)) {
 echo $ls->display();
 echo '<br/><hr class="hidden-lg hidden-md hidden-sm hidden-xs" />';
 
-// listAdmins
- }
-
+/* Admins edit table - END */
+    } 
+  }
 } // class 
