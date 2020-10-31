@@ -42,11 +42,7 @@ public $settings = array(
  /**
    * Fallback to local login if IMAP fails
    */
-  public function fallback_localValidateLogin($login, $password ) {
-    logEvent('calling : adminIMAPauth :fallback_localValidateLogin');
-    require_once __DIR__.'/../phpListAdminAuthentication.php';
-    $core_admin_auth = new phpListAdminAuthentication();
-    return $core_admin_auth -> validateLogin($login, $password );
+  private function fallback_localValidateLogin($login, $password ) {
   }
 
   /**
@@ -125,7 +121,10 @@ public $settings = array(
             }
             else {        
                 logEvent('IMAP authentication failed. Fallback to local authentication' );
-                return fallback_localValidateLogin($login, $password );
+                require_once __DIR__.'/../phpListAdminAuthentication.php';
+                $core_admin_auth = new phpListAdminAuthentication();
+                logEvent('$core_admin_auth = ' . print_r($core_admin_auth, true ) );
+                return $core_admin_auth->validateLogin($login, $password );
             }
   }
 
