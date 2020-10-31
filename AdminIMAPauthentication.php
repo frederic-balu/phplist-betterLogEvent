@@ -2,10 +2,20 @@
 
 class adminIMAPauthentication extends phplistPlugin {
   public $name = 'IMAP server as authenticator';
-  public $version = 0.1;
+  public $version = 0.1.1;
   public $authors = 'Frederic BALU';
   public $description = 'Provides authentication to phpList administrators using IMAP ';
   public $authProvider = true;
+
+ /**
+   * Fallback to local login if IMAP fails
+   */
+  function localValidateLogin($login, $password ) {
+    logEvent('calling : adminIMAPauthentication : localValidateLogin');
+    require_once __DIR__.'/../phpListAdminAuthentication.php';
+    $core_admin_auth = new phpListAdminAuthentication();
+    return $core_admin_auth->validateLogin($login,$password);
+  }
 
   /**
    * 
@@ -23,19 +33,6 @@ class adminIMAPauthentication extends phplistPlugin {
    *    return array(0,'Incorrect login details'); // login failed
    * 
    */ 
-
- 
- /**
-   * Fallback to local login if IMAP fails
-   */
-  function localValidateLogin($login,$password) {
-    logEvent('calling : adminIMAPauthentication : localValidateLogin');
-    require_once __DIR__.'/../phpListAdminAuthentication.php';
-    $core_admin_auth = new phpListAdminAuthentication();
-    return $core_admin_auth->validateLogin($login,$password);
-  }
-
-
   public function validateLogin($login,$password) 
   {
      logEvent('calling : adminIMAPauthentication : validateLogin');
@@ -67,7 +64,7 @@ class adminIMAPauthentication extends phplistPlugin {
             $connection = imap_open($imap_connection_string, $login, $password, OP_HALFOPEN);
             if ($connection) {
                 imap_close($connection);
-                $query = sprintf('select disabled, id from %s where email = "%s"', $GLOBALS['tables']['admin'], sql_escape($login));
+                $query = sprintf('select disabled, id from %s where login = "%s"', $GLOBALS['tables']['admin'], sql_escape($login));
                 $req = Sql_Query($query);
                 $admindata = Sql_Fetch_Assoc($req);
                 if ($admindata['disabled']) {
@@ -107,11 +104,12 @@ class adminIMAPauthentication extends phplistPlugin {
    *    return array(0,'No such account'); // admin failed
    * 
    */ 
+
    
   public function validateAccount($id) 
   {
      logEvent('calling : adminIMAPauthentication : validateAccount');
-        $query = sprintf('select id, disabled,password from %s where id = %d', $GLOBALS['tables']['admin'], $id);
+        $query = sprintf('select id, disabled from %s where id = %d', $GLOBALS['tables']['admin'], $id);
         $data = Sql_Fetch_Row_Query($query);
         if (!$data[0]) {
             return array(0, s('No such account'));
