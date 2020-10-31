@@ -2,11 +2,48 @@
 
 class adminIMAPauthentication extends phplistPlugin {
   public $name = 'IMAP server as authenticator';
-  public $version = 0.1.1;
+  public $version = 0.2;
   public $authors = 'Frederic BALU';
   public $description = 'Provides authentication to phpList administrators using IMAP ';
   public $authProvider = true;
 
+  global $adminAuthenticationProvider;
+  
+/**
+ * Define settings needed by this plugin
+ *
+**/  
+  public $settings = array(
+    "adminIMAPauthentication__imap_server_name" => array (
+      'value' => "", // no default value
+      'description' => 'IMAP admin authentication server nane\nYour IMAP server name (FQDN) or IP\nexamples : mail.google.com, 8.8.8.8, 2001:4860:4860::8888 ...',
+      'type' => "text",
+      'allowempty' => 0,
+      "max" => 255,
+      "min" => 8,
+      'category'=> 'security',
+    ),
+    "adminIMAPauthentication__imap_server_security" => array (
+      'value' => "", // default is empty
+      'description' => 'IMAP admin authentication server security\n Enter the string corresponding to the IMAP security protocol you have to use.\nLeave empty for no security. Valid : [novalidate-cert | tls | ssl | ssl/novalidate-cert]',
+      'type' => "text",
+      'allowempty' => 1,
+      "max" => 40,
+      "min" => 3,
+      'category'=> 'security',
+    ),
+    "adminIMAPauthentication__imap_server_port" => array (
+      'value' => "143", // default IMAP port
+      'description' => 'IMAP admin authentication server port\nEnter port number value according to chosen security and provider configuration.\nValid : {143-1024}',
+      'type' => "integer",
+      'allowempty' => 0,
+      "max" => 1024,
+      "min" => 143,
+      'category'=> 'security',
+    ),
+  );
+  
+  
  /**
    * Fallback to local login if IMAP fails
    */
@@ -35,22 +72,21 @@ class adminIMAPauthentication extends phplistPlugin {
    */ 
   public function validateLogin($login,$password) 
   {
-     logEvent('calling : adminIMAPauthentication : validateLogin');
-        if(empty($login)||($password=="")){
+    logEvent('calling : adminIMAPauthentication : validateLogin' );      
+    if(empty($login)||($password=="")){
             return array(0, s('Please enter your credentials.'));
         };
-        $imap_host = 'mail.lacfdtaltice.fr';
-        $imap_port = '993';
-//        $imap_security = '/imap';
-        $imap_security = '/imap/ssl';
-//        $imap_security = '/imap/ssl/novalidate-cert';
-//        $imap_security = '/imap/tls';
-//        $imap_security = '/imap/novalidate-cert';
-        
-        
-            $fp = @fsockopen($imap_host, $imap_port );
+    $imap_server_name = getConfig('adminIMAPauthentication__imap_server_name' );
+    $imap_server_security = getConfig('adminIMAPauthentication__imap_server_security' );
+    $imap_server_port = getConfig('adminIMAPauthentication__imap_server_port' );
+
+    if (!$imap_server_name ) {
+      logEvent('Admin IMAP authentication server configuration is incomplete. Please, check your configuration. Fallback to local authentication');
+      return localValidateLogin($login, $password );
+    }    
+            $fp = @fsockopen($imap_server_name, $imap_server_port );
             if (!$fp) {
-                logEvent('TCP connection to IMAP authentication server (' . $imap_host . ':' . $imap_port . ') failed. Fallback to local authentication');
+                logEvent('TCP connection to IMAP authentication server (' . $imap_server_name . ':' . $imap_server_port . ') failed. Fallback to local authentication');
                 return localValidateLogin($login, $password );
 //                return array(0, 'TCP connection to IMAP authentication server failed');
             }
@@ -58,7 +94,7 @@ class adminIMAPauthentication extends phplistPlugin {
                 fclose($fp);
             }
 
-            $imap_connection_string = '{' . $imap_host . ':{' . $imap_port . '}' . $imap_security . '}';
+            $imap_connection_string = '{' . $imap_server_name . ':{' . $imap_server_port . '}' . $imap_server_security . '}';
             logEvent('IMAP connection string = ' . $imap_connection_string );
             logEvent('IMAP login = ' . $login );
             $connection = imap_open($imap_connection_string, $login, $password, OP_HALFOPEN);
