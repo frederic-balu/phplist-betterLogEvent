@@ -13,7 +13,18 @@ class adminIMAPauth extends phplistPlugin {
  * Define settings needed by this plugin
  * !!! each array name length has to be less than or equal 36 characters
 **/  
-public $settings = array(
+
+  /**
+    * Constructor.
+  **/
+
+    public $coderoot = PLUGIN_ROOTDIR . '/adminIMAPauth/';
+
+    function __construct()
+    {
+        parent::__construct();
+//public $settings = array(
+     $this->settings = array(
     "adminIMAPauth__imap_server_name" => array (
       'value' => "", // no default value
       'description' => 'IMAP admin authentication server nane<br/>Your IMAP server name (FQDN) or IP<br/>examples : mail.google.com, 8.8.8.8, 2001:4860:4860::8888 ...',
@@ -38,13 +49,21 @@ public $settings = array(
       'category'=> 'security',
     ),
   );
-  
- /**
-   * Fallback to local login if IMAP fails
-   */
-  private function fallback_localValidateLogin($login, $password ) {
-  }
+    }
 
+public function activate()
+    {
+//        logEvent('calling : adminIMAPauth : activate' );      
+        parent::activate();
+    $newSize = 120;
+    // donne $newSize caractères au lieu de 25 pour le loginname
+    $query = sprintf('alter table %s MODIFY loginname varchar(%d)', $GLOBALS['tables']['admin'], $newSize );
+    $req = Sql_Query($query);
+    // donne $newSize caractères au lieu de 25 pour le modifiedby
+    $query = sprintf('alter table %s MODIFY modifiedby varchar(%d)', $GLOBALS['tables']['admin'], $newSize );
+    $req = Sql_Query($query);
+    }    
+    
   /**
    * 
    * validateLogin, verify that the login credentials are correct
