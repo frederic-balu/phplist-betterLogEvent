@@ -33,7 +33,42 @@ public function initialise()
     logEvent('calling : betterLogEvent : initialise' );
     parent::initialise();
 }    
-    
+
+      /**
+     * array of pages in this plugin to add to the main menu
+     *
+     * example format:
+     *      array(
+     *          'page' => array('category' => 'subscribers'),
+     *      )
+     *
+     * valid categories are:
+     *
+     * subscribers
+     * campaigns
+     * statistics
+     * system
+     * config
+     * develop (will only show up in "dev" mode)
+     * info
+     *
+     */
+    public $topMenuLinks = array();
+
+      /**
+     * Startup code, all other objects are constructed
+     * returns success or failure, false means we cannot start
+     */
+    public function activate() {
+      if (isset($_SESSION['logindetails']['adminname'] ) ) {
+        $topMenuLinks = array(
+        $_SESSION['logindetails']['adminname'] => array('category' => 'system' )
+        );
+      }
+    }
+  
+  
+  
   /**
    * logEvent
    * @param string msg message to log
