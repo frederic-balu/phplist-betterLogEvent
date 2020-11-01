@@ -4,7 +4,7 @@ require_once __DIR__.'/../accesscheck.php';
 
 class betterLogEvent extends phplistPlugin {
   public $name = 'Better LogEvent';
-  public $version = '0.1.1';
+  public $version = '0.1.2';
   public $authors = 'Frederic BALU';
   public $description = 'A plugin to enhance the informations available thru eventLog function';
   public $authProvider = true;
@@ -97,7 +97,7 @@ class betterLogEvent extends phplistPlugin {
     if (isset($_SERVER['REMOTE_ADDR'] ) ) {
      $from = $_SERVER['REMOTE_ADDR'];
     }
-    $msg = $username . '(' . $uid . ')@' . $from . ' : ' . $msg;
+    $msg = '[' . $username . '(id ' . $uid . ')]@[' . $from . '] : ' . $msg;
     Sql_Query(sprintf('insert into %s (entered,page,entry) values(now(),"%s","%s")', $tables['eventlog'],
         $p, sql_escape($msg)));
     $logged = true;
