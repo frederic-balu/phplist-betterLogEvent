@@ -4,7 +4,7 @@ require_once __DIR__.'/../accesscheck.php';
 
 class adminIMAPauth extends phplistPlugin {
   public $name = 'IMAP server as authenticator';
-  public $version = 0.9;
+  public $version = 0.9.1;
   public $authors = 'Frederic BALU';
   public $description = 'Provides authentication to phpList administrators using IMAP ';
   public $authProvider = true;
