@@ -4,9 +4,9 @@ require_once __DIR__.'/../accesscheck.php';
 
 class adminIMAPauth extends phplistPlugin {
   public $name = 'IMAP server as authenticator';
-  public $version = 0.9.2;
+  public $version = '0.9.3';
   public $authors = 'Frederic BALU';
-  public $description = 'Provides authentication to phpList administrators using IMAP ';
+  public $description = 'Provides authentication to phpList administrators using IMAP';
   public $authProvider = true;
 
 /**
@@ -55,7 +55,7 @@ public function initialise()
 {
     logEvent('calling : adminIMAPauth : initialise' );
     parent::initialise();
-    $newSize = 120;
+    $newSize = 80;
     // donne $newSize caractères au lieu de 25 pour le loginname pour supporter la longueur des emails
     $query = sprintf('alter table %s MODIFY loginname varchar(%d)', $GLOBALS['tables']['admin'], $newSize );
     $req = Sql_Query($query);
