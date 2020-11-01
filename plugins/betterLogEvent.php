@@ -4,7 +4,7 @@ require_once __DIR__.'/../accesscheck.php';
 
 class betterLogEvent extends phplistPlugin {
   public $name = 'Better LogEvent';
-  public $version = '0.1.0';
+  public $version = '0.1.1';
   public $authors = 'Frederic BALU';
   public $description = 'A plugin to enhance the informations available thru eventLog function';
   public $authProvider = true;
@@ -18,21 +18,17 @@ class betterLogEvent extends phplistPlugin {
     * Constructor.
   **/
 
-    public $coderoot = PLUGIN_ROOTDIR . '/betterLogEvent/';
+  public $coderoot = PLUGIN_ROOTDIR . '/betterLogEvent/';
 
-    function __construct()
-    {
-        parent::__construct();
-     $this->settings = array(
-    ),
-  );
-}
+  function __construct() {
+    parent::__construct();
+    $this->settings = array();
+  }
 
-public function initialise()
-{
+  public function initialise() {
     logEvent('calling : betterLogEvent : initialise' );
     parent::initialise();
-}    
+  }    
 
       /**
      * array of pages in this plugin to add to the main menu
@@ -76,6 +72,7 @@ public function initialise()
    */
   public function logEvent($msg = '') {
     global $tables;
+    $logged = false;
     if (isset($GLOBALS['page'])) {
         $p = $GLOBALS['page'];
     } elseif (isset($_GET['page'])) {
@@ -96,13 +93,14 @@ public function initialise()
     if (isset($_SESSION['logindetails']['adminname'] ) ) {
      $username = $_SESSION['logindetails']['adminname'];
     }
-    $from = '?'
-    if (isset($remoteAddr ) ) {
-     $from = $remoteAddr;
+    $from = '?';
+    if (isset($_SERVER['REMOTE_ADDR'] ) ) {
+     $from = $_SERVER['REMOTE_ADDR'];
     }
     $msg = $username . '(' . $uid . ')@' . $from . ' : ' . $msg;
     Sql_Query(sprintf('insert into %s (entered,page,entry) values(now(),"%s","%s")', $tables['eventlog'],
         $p, sql_escape($msg)));
+    $logged = true;
   }
 
 } // class 
